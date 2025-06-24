@@ -3,9 +3,11 @@ package org.fubabz.test.rabbitmq.consumer;
 
 import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.PostConstruct;
 
 import com.rabbitmq.client.Delivery;
@@ -33,7 +35,7 @@ public class AutoAckConsumer {
                                log.debug("AutoAck Process start: " + new String(msg.getBody()));
                                return Mono.delay(Duration.ofMillis(sec * 1000))
                                           .doOnNext(i -> log.debug("AutoAck finished: " + new String(msg.getBody()) + " / processingTime: " + sec));
-                           })
+                           }, 10)
                            .subscribe();
     }
 }

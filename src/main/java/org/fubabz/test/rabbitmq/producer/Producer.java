@@ -27,11 +27,11 @@ public class Producer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         sender.declareQueue(QueueSpecification.queue(QUEUE_NAME)).block();
-        send();
+//        send();
     }
 
     private void send() {
-        Flux.interval(Duration.ofMillis(200))
+        Flux.interval(Duration.ofMillis(20))
             .map(i -> new OutboundMessage("", QUEUE_NAME, ("Message " + i).getBytes()))
             .as(sender::send)
             .subscribe();

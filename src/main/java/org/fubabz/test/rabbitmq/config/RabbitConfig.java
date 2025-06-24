@@ -48,13 +48,12 @@ public class RabbitConfig {
     @Profile("autoack")
     @Bean
     public Flux<Delivery> autoAckReceiverFlux(Receiver receiver) {
-        return receiver.consumeAutoAck(QUEUE_NAME, new ConsumeOptions())
-                       .limitRate(10);
+        return receiver.consumeAutoAck(QUEUE_NAME, new ConsumeOptions());
     }
 
     @Profile("manualack")
     @Bean
     public Flux<AcknowledgableDelivery> manualAckReceiverFlux(Receiver receiver) {
-        return receiver.consumeManualAck(QUEUE_NAME, new ConsumeOptions().qos(10));
+        return receiver.consumeManualAck(QUEUE_NAME, new ConsumeOptions());
     }
 }

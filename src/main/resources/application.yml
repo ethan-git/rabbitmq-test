@@ -4,3 +4,5 @@ spring:
     port: 5672
     username: test
     password: test
+server:
+  port: 18080
