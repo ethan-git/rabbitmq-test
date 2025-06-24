@@ -1,7 +1,8 @@
 
 package org.fubabz.test.rabbitmq.producer;
 
-import static org.fubabz.test.rabbitmq.config.RabbitConfig.QUEUE_NAME;
+import static org.fubabz.test.rabbitmq.config.RabbitConfig.QUEUE_NAME_1;
+import static org.fubabz.test.rabbitmq.config.RabbitConfig.QUEUE_NAME_2;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -26,13 +27,14 @@ public class Producer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        sender.declareQueue(QueueSpecification.queue(QUEUE_NAME)).block();
+        sender.declareQueue(QueueSpecification.queue(QUEUE_NAME_1)).block();
+        sender.declareQueue(QueueSpecification.queue(QUEUE_NAME_2)).block();
 //        send();
     }
 
     private void send() {
         Flux.interval(Duration.ofMillis(20))
-            .map(i -> new OutboundMessage("", QUEUE_NAME, ("Message " + i).getBytes()))
+            .map(i -> new OutboundMessage("", QUEUE_NAME_1, ("Message " + i).getBytes()))
             .as(sender::send)
             .subscribe();
     }

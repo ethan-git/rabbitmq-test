@@ -1,15 +1,13 @@
 
 package org.fubabz.test.rabbitmq.producer;
 
-import static org.fubabz.test.rabbitmq.config.RabbitConfig.QUEUE_NAME;
+import static org.fubabz.test.rabbitmq.config.RabbitConfig.QUEUE_NAME_1;
+import static org.fubabz.test.rabbitmq.config.RabbitConfig.QUEUE_NAME_2;
 
-import java.time.Duration;
 import java.util.stream.IntStream;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +29,8 @@ public class ProducerService {
 
     @PostConstruct
     public void setUp() {
-        sender.declareQueue(QueueSpecification.queue(QUEUE_NAME)).block();
+        sender.declareQueue(QueueSpecification.queue(QUEUE_NAME_1)).block();
+        sender.declareQueue(QueueSpecification.queue(QUEUE_NAME_2)).block();
 //        sender.declareQueue(QueueSpecification.queue("line.voom.notification.live")).block();
 //        sender.declareQueue(QueueSpecification.queue("line.voom.notification.live.light")).block();
 //        sender.declareQueue(QueueSpecification.queue("line.voom.notification.live.heavy")).block();
@@ -41,9 +40,15 @@ public class ProducerService {
 
     }
 
-    public Mono<Void> send(int messageCount) {
+    public Mono<Void> send1(int messageCount) {
         return Flux.fromStream(IntStream.rangeClosed(1, messageCount).boxed())
-                   .map(i -> new OutboundMessage("", QUEUE_NAME, ("Message " + i).getBytes()))
+                   .map(i -> new OutboundMessage("", QUEUE_NAME_1, ("Message " + i).getBytes()))
+                   .as(sender::send);
+    }
+
+    public Mono<Void> send2(int messageCount) {
+        return Flux.fromStream(IntStream.rangeClosed(1, messageCount).boxed())
+                   .map(i -> new OutboundMessage("", QUEUE_NAME_2, ("Message " + i).getBytes()))
                    .as(sender::send);
     }
 }

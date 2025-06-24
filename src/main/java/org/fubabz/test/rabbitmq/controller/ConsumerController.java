@@ -16,14 +16,15 @@ public class ConsumerController {
 
     private final ProducerService producerService;
 
-    @GetMapping("/set-concurrency")
-    public Mono<Boolean> setAutoAckFluxConcurrencyCount(@RequestParam int concurrencyCount) {
-        return Mono.just(Boolean.TRUE);
+    @GetMapping("/send1")
+    public Mono<Boolean> send1(@RequestParam int messageCount) {
+        return producerService.send1(messageCount)
+                              .then(Mono.just(Boolean.TRUE));
     }
 
-    @GetMapping("/send")
-    public Mono<Boolean> send(@RequestParam int messageCount) {
-        return producerService.send(messageCount)
+    @GetMapping("/send2")
+    public Mono<Boolean> send2(@RequestParam int messageCount) {
+        return producerService.send2(messageCount)
                               .then(Mono.just(Boolean.TRUE));
     }
 }

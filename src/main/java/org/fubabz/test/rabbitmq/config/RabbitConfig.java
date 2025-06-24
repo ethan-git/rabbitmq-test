@@ -20,7 +20,8 @@ import reactor.rabbitmq.SenderOptions;
 @Configuration
 public class RabbitConfig {
 
-    public static final String QUEUE_NAME = "test-queue";
+    public static final String QUEUE_NAME_1 = "test-queue_1";
+    public static final String QUEUE_NAME_2 = "test-queue_2";
 
     @Bean
     public ConnectionFactory testRabbitConnectionFactory() {
@@ -38,7 +39,15 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Receiver receiver(ConnectionFactory testRabbitConnectionFactory) {
+    public Receiver receiver1(ConnectionFactory testRabbitConnectionFactory) {
+        ReceiverOptions options = new ReceiverOptions()
+                .connectionFactory(testRabbitConnectionFactory)
+                .connectionSubscriptionScheduler(Schedulers.boundedElastic());
+        return RabbitFlux.createReceiver(options);
+    }
+
+    @Bean
+    public Receiver receiver2(ConnectionFactory testRabbitConnectionFactory) {
         ReceiverOptions options = new ReceiverOptions()
                 .connectionFactory(testRabbitConnectionFactory)
                 .connectionSubscriptionScheduler(Schedulers.boundedElastic());
@@ -47,13 +56,19 @@ public class RabbitConfig {
 
     @Profile("autoack")
     @Bean
-    public Flux<Delivery> autoAckReceiverFlux(Receiver receiver) {
-        return receiver.consumeAutoAck(QUEUE_NAME, new ConsumeOptions());
+    public Flux<Delivery> autoAckReceiverFlux1(Receiver receiver1) {
+        return receiver1.consumeAutoAck(QUEUE_NAME_1, new ConsumeOptions());
+    }
+
+    @Profile("autoack")
+    @Bean
+    public Flux<Delivery> autoAckReceiverFlux2(Receiver receiver2) {
+        return receiver2.consumeAutoAck(QUEUE_NAME_2, new ConsumeOptions());
     }
 
     @Profile("manualack")
     @Bean
-    public Flux<AcknowledgableDelivery> manualAckReceiverFlux(Receiver receiver) {
-        return receiver.consumeManualAck(QUEUE_NAME, new ConsumeOptions());
+    public Flux<AcknowledgableDelivery> manualAckReceiverFlux(Receiver receiver1) {
+        return receiver1.consumeManualAck(QUEUE_NAME_1, new ConsumeOptions());
     }
 }

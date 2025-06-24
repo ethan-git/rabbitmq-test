@@ -3,12 +3,11 @@ package org.fubabz.test.rabbitmq.consumer;
 
 import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 
 import com.rabbitmq.client.Delivery;
 
@@ -19,23 +18,24 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Component
 @Profile("autoack")
-public class AutoAckConsumer {
+public class AutoAckConsumer2 {
 
-    private final Flux<Delivery> autoAckReceiverFlux;
+    private final Flux<Delivery> autoAckReceiverFlux2;
 
-    public AutoAckConsumer(Flux<Delivery> autoAckReceiverFlux) {
-        this.autoAckReceiverFlux = autoAckReceiverFlux;
+    public AutoAckConsumer2(Flux<Delivery> autoAckReceiverFlux2) {
+        this.autoAckReceiverFlux2 = autoAckReceiverFlux2;
     }
 
     @PostConstruct
     public void consume() {
-        log.info("AutoAck Consumer Started");
-        autoAckReceiverFlux.flatMap(msg -> {
+        log.info("AutoAck Consumer2 Started");
+        autoAckReceiverFlux2.flatMap(msg -> {
                                int sec = ThreadLocalRandom.current().nextInt(6, 11);
-                               log.debug("AutoAck Process start: " + new String(msg.getBody()));
+                               log.debug("AutoAck2 Process start: " + new String(msg.getBody()));
                                return Mono.delay(Duration.ofMillis(sec * 1000))
-                                          .doOnNext(i -> log.debug("AutoAck finished: " + new String(msg.getBody()) + " / processingTime: " + sec));
-                           }, 10)
+//                                          .doOnNext(i -> log.debug("AutoAck2 finished: " + new String(msg.getBody()) + " / processingTime: " + sec))
+                                       ;
+                           }, 5)
                            .subscribe();
     }
 }
